@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation Menu</title>
+</head>
+<body>
+    <nav>
+        <ul>
+            {% for table in user_tables %}
+                <li><a href="{% url 'JuJa:view_invoice' invoice_id=table.id %}">{{ table.table_name }}</a></li>
+            {% endfor %}
+        </ul>
+    </nav>
+</body>
+</html>

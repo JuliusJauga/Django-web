@@ -1,0 +1,97 @@
+
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='https://www.w3.org/1999/xhtml'>
+<head>
+<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
+<body style='font-family:Tahoma;font-size:12px;color: #333333;background-color:#FFFFFF;'>
+<table align='center' border='0' cellpadding='0' cellspacing='0' style='height:842px; width:595px;font-size:12px;'>
+  <tr>
+    <td valign='top'><table width='100%' cellspacing='0' cellpadding='0'>
+        <tr>
+          <td width='50%'>&nbsp;</td>
+        </tr>
+      </table>Pirkėjas: <br/><br/>
+      <table width='100%' cellspacing='0' cellpadding='0'>
+      <tr>
+        <td valign='top' width='35%' style='font-size:12px;'> <strong >{{user_data.company_name}}</strong><br /> 
+{{user_data.client_address}} <br/>Įm. kodas: {{user_data.company_code}}<br />PVM kodas: {{user_data.client_code}}<br />
+
+</td>
+        <td valign='top' width='35%'>
+</td>
+        <td valign='top' width='30%' style='font-size:12px;'>Sąskaitos data: {{user_data.invoice_date}}<br/>
+		Apmokėti iki: {{user_data.payment_date}} <br/>
+		</td>
+
+      </tr>
+    </table>
+    <table width='100%' height='100' cellspacing='0' cellpadding='0'>
+      <tr>
+        <td><div align='center' style='font-size: 14px;font-weight: bold;'>PVM Sąskaita faktūra nr {{user_data.document_number}} </div></td>
+      </tr>
+    </table>
+<table width='100%' cellspacing='0' cellpadding='2' border='1' bordercolor='#CCCCCC'>
+      <tr>
+
+        <td width='35%' bordercolor='#ccc' bgcolor='#f2f2f2' style='font-size:12px;'><strong>Pavadinimas </strong></td>
+        <td bordercolor='#ccc' bgcolor='#f2f2f2' style='font-size:12px;'><strong>Kiekis</strong></td>
+        <td bordercolor='#ccc' bgcolor='#f2f2f2' style='font-size:12px;'><strong>Kaina</strong></td>
+        <td bordercolor='#ccc' bgcolor='#f2f2f2' style='font-size:12px;'><strong>Viso</strong></td>
+  
+        </tr>
+      <tr style="display:none;"><td colspan="*"><tr>
+
+{% for row in table_rows %}
+
+<td valign='top' style='font-size:12px;'>{{ row.column1 }}</td>
+<td valign='top' style='font-size:12px;'>{{ row.column3 }} </td>
+<td valign='top' style='font-size:12px;'>{{ row.column2 }} </td>
+<td valign='top' style='font-size:12px;'>{{ row.column4 }} </td>
+</tr><tr>
+
+{% endfor %}
+
+</tr></td></tr>
+    </table>
+<table width='100%' cellspacing='0' cellpadding='2' border='0'>
+      <tr>
+        <td style='font-size:12px;width:50%;'><strong> </strong></td>
+        <td><table width='100%' cellspacing='0' cellpadding='2' border='0'>
+  <tr>
+<td align='right' style='font-size:12px;' >Viso</td>
+    <td  align='right' style='font-size:12px;'>{{sum}} €<td>
+  </tr>
+  <tr>
+    <td  align='right' style='font-size:12px;'>PVM(21.00%)</td>
+    <td  align='right' style='font-size:12px;'>{{vat}} €</td>
+  </tr>
+  <tr>
+
+    <td  align='right' style='font-size:12px;'><b>Iš viso</b></td>
+    <td  align='right' style='font-size:12px;'><b>{{sum_with_vat}} €</b></td>
+  </tr></table>
+</td>
+      </tr>
+</table> 
+   
+   <table width='100%' height='50'><tr><td style='font-size:12px;text-align:justify;'></td></tr></table>
+    <table  width='100%' cellspacing='0' cellpadding='2'>
+      <tr>
+        <td width='33%' style='border-top:double medium #CCCCCC;font-size:12px;' valign='top' ><b>{{user_data.buyer_name}}</b><br/>
+Įm. kodas:  {{user_data.buyer_code}}<br/>
+PVM kodas:  {{user_data.buyer_pvm_code}}<br/>
+</td>
+        <td width='33%' style='border-top:double medium #CCCCCC; font-size:12px;' align='center' valign='top'>
+{{user_data.seller_address}} <br/>
+Telefonas: {{user_data.seller_phone_number}}<br/>
+</td>
+
+        <td valign='top' width='34%' style='border-top:double medium #CCCCCC;font-size:12px;' align='right'>{{user_data.bank_name}}<br/> {{user_data.bank_account}}  <br/>SWIFT: {{user_data.swift}} <br/>{{user_data.alternative_payment}} {{user_data.alternative_account}} <br/>    
+ </td>
+      </tr>
+    </table>
+</td>
+  </tr>
+</table>
+</body>
+</html>

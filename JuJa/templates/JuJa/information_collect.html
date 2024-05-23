@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <form method="POST">
+    {% csrf_token %}
+    <input type="text" name="document_number" placeholder="PVM s.f. nr"> </br>
+    <input type="text" name="company_name" placeholder="Įmonės pavadinimas"> </br>
+    <input type="text" name="client_address" placeholder="Kliento adresas"> </br>
+    <input type="text" name="company_code" placeholder="Įmonės kodas">
+    <input type="text" name="vat_code" placeholder="Kliento PVM mokėtojo kodas"> </br>
+    <input type="date" name="invoice_date" value="2024-05-19"> </br>
+    <input type="date" name="payment_date" value="2024-05-19"> </br>
+    <input type="text" name="buyer_name" placeholder="Įmonės pavadinimas"> </br>
+    <input type="text" name="buyer_code" placeholder="Įmonės kodas">
+    <input type="text" name="buyer_pvm_code" placeholder="PVM mokėtojo kodas."> </br>
+    <input type="text" name="seller_address" placeholder="Adresas"> </br>
+    <input type="text" name="seller_phone_number" placeholder="Telefonas"> </br>
+    <input type="text" name="bank_name" placeholder="Banko vardas">
+    <input type="text" name="bank_account" placeholder="Banko sąskaita (IBAN)"> </br>
+    <input type="text" name="swift" placeholder="SWIFT"> </br>
+    <input type="text" name="alternative_payment" placeholder="Alternatyvus mokėjimo būdas"> </br>
+    <input type="text" name="alternative_account" placeholder="Alternatyvi mokėjimo sąskaita"> </br>
+    <button type="submit" class="btn btn-primary">Išsaugoti duomenis</button>
+
+    </form>
+</body>
+</html>

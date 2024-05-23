@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <form method="POST">
+        {% csrf_token %}
+    <input type="text" name="table_name" placeholder="Saskaitos faktūros pavadinimas" required>
+    <table id="dynamic-table">
+        <tr>
+            <th>Prekė</th>
+            <th>Kaina</th>
+            <th>Kiekis</th>
+        </tr>
+    </table>
+    <br>
+    <button type="button" onclick="addRow()">Pridėti prekę</button>
+    <button type="submit" class="btn btn-primary">Sukurti saskaitą faktūrą</button>
+    <script>
+        function addRow() {
+            var table = document.getElementById("dynamic-table");
+            var rowCount = table.rows.length;
+            var newRow = table.insertRow(rowCount);
+            var cell1 = newRow.insertCell(0);
+            var cell2 = newRow.insertCell(1);
+            var cell3 = newRow.insertCell(2);
+            cell1.innerHTML = "<input type='text' name='product_" + rowCount + "' />";
+            cell2.innerHTML = "<input type='text' name='price_" + rowCount + "' />";
+            cell3.innerHTML = "<input type='text' name='quantity_" + rowCount + "' />";
+        }
+    </script>
+    </form>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<h1> Prisijungimo puslapis </h1>
+<br/><br/>
+<form method="POST" action="{% url 'JuJa:login_user' %}">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-danger" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    {% csrf_token %}
+    <div class="mb-3">
+        <label for="exampleUsername1" class="form-label">Prisijungimo vardas</label>
+        <input type="text" class="form-control" name="username">
+      </div>
+      <div class="mb-3">
+        <label for="exampleInputPassword1" class="form-label">Slaptažodis</label>
+        <input type="password" class="form-control" name="password">
+      </div>
+      <button type="submit" class="btn btn-primary">Prisijungti</button>
+</form>
+<br/><br/>
