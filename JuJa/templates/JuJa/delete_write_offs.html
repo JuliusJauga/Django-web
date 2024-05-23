@@ -9,7 +9,7 @@
     <nav>
         <ul>
             {% for write_table in user_write_offs %}
-                <li><a href="{% url 'JuJa:view_write_off' write_off_id=write_table.id %}">{{ write_table.write_table_name }}</a></li>
+                <li><a href="{% url 'JuJa:delete_write_off' write_off_id=write_table.id %}">{{ write_table.write_table_name }}</a></li>
             {% endfor %}
         </ul>
     </nav>

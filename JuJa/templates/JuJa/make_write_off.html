@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <form method="post">
+        {% csrf_token %}
+        <h2>Pasirinkti saskaitas faktūras</h2>
+        {% for table in user_tables %}
+            <input type="checkbox" name="selected_tables" value="{{ table.id }}">
+            <label>{{ table.table_name }}</label><br>
+        {% endfor %}
+        <br>
+        <input type="text" name="write_table_name" placeholder="Nurašymo akto pavadinimas" required><br><br>
+        <button type="submit" class="btn btn-primary">Sukurti nurašymo aktą</button>
+    </form>
+</body>
+</html>

@@ -33,6 +33,8 @@ urlpatterns = [
     path('enter_information/', views.enter_information, name='enter_information'),
     path('delete_invoices/', views.delete_invoices, name='delete_invoices'),
     path('make_write_off/', views.make_write_off, name='make_write_off'),
-    path('view_write_offs/', views.view_write_offs, name='view_write_off'),
+    path('view_write_offs/', views.view_write_offs, name='view_write_offs'),
     path('view_write_off/<int:write_off_id>/', views.view_write_off, name='view_write_off'),
+    path('delete_write_offs/', views.delete_write_offs, name='delete_write_offs'),
+    path('delete_write_off/<int:write_off_id>/', views.delete_write_off, name='delete_write_off'),
 ]

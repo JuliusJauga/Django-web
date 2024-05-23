@@ -34,3 +34,10 @@ class UserData(models.Model):
     swift = models.CharField(max_length=100, blank=True, default="SWIFT")
     alternative_payment = models.CharField(max_length=100, blank=True, default="ALTERNATYVUS MOKĖJIMAS")
     alternative_account = models.CharField(max_length=100, blank=True, default="ALTERNATYVI SĄSKAITA")
+class WriteTable(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    write_table_name = models.CharField(max_length=100)
+class WriteOffRow(models.Model):
+    write_table = models.ForeignKey(WriteTable, on_delete=models.CASCADE)
+    user_table = models.ForeignKey(UserTable, on_delete=models.CASCADE)
+    

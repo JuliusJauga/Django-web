@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.http import HttpResponse
-from .models import TableRow, UserTable, UserData
+from .models import TableRow, UserTable, UserData, WriteTable, WriteOffRow
 from django.utils import timezone
 # Create your views here.
 import locale
@@ -116,7 +116,17 @@ def edit_invoice(request, invoice_id):
 def make_write_off(request):
     if not request.user.is_authenticated:
         return redirect('JuJa:login_user')
-    return render(request, 'JuJa/write_off.html', {})
+    if request.method == "POST":
+        selected_tables = request.POST.getlist('selected_tables')
+        write_table_name = request.POST.get('write_table_name')
+        write_table = WriteTable.objects.create(user=request.user, write_table_name=write_table_name)
+        for table_id in selected_tables:
+            user_table = UserTable.objects.get(id=table_id)
+            WriteOffRow.objects.create(write_table=write_table, user_table=user_table)
+        return redirect('JuJa:view_write_offs')
+    user_tables = UserTable.objects.filter(user=request.user)
+    context = {'user_tables': user_tables}
+    return render(request, 'JuJa/make_write_off.html', context)
 def enter_information(request):
     if not request.user.is_authenticated:
         return redirect('JuJa:login_user')
@@ -196,8 +206,23 @@ def delete_invoice(request, invoice_id):
     UserTable.objects.filter(id=invoice_id).delete()
     return redirect('JuJa:delete_invoices')
 def view_write_offs(request, write_off_id=None):
-    
+    if not request.user.is_authenticated:
+        return redirect('JuJa:login_user')
+    user_write_offs = WriteTable.objects.filter(user=request.user)
+    context = {'user_write_offs': user_write_offs}
+    return render(request, 'JuJa/view_write_offs.html', context)
 def view_write_off(request, write_off_id=None):
     if not request.user.is_authenticated:
         return redirect('JuJa:login_user')
     return render(request, 'JuJa/write_off.html', {})
+def delete_write_offs(request):
+    if not request.user.is_authenticated:
+        return redirect('JuJa:login_user')
+    user_write_offs = WriteTable.objects.filter(user=request.user)
+    context = {'user_write_offs': user_write_offs}
+    return render(request, 'JuJa/delete_write_offs.html', context)
+def delete_write_off(request, write_off_id):
+    if not request.user.is_authenticated:
+        return redirect('JuJa:login_user')
+    WriteTable.objects.filter(id=write_off_id).delete()
+    return redirect('index')
