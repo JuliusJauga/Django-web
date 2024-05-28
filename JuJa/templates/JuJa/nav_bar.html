@@ -1,44 +1,49 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{%static 'JuJa/style.css'%}"/>
 {% if messages %}
     {% for message in messages %}
         <div class="alert alert-danger" role="alert">
-            {{ message }}
+            
         </div>
     {% endfor %}
 {% endif %}
-<nav>
+{% if user.is_authenticated %}
+<h1 class="header"> Sveiki, {{ user.username }} </h1> </br>
+{% else %}
+<h1 class="header"> Sveiki, svečias </h1> </br>
+{% endif %}
+<nav class="navbar">
     {% if user.is_authenticated %}
-        <h1> Sveiki, {{ user.username }} </h1>
-        <ul>
+        <ul class="nav-links">
             <li><a href="{% url 'JuJa:enter_information' %}">Įrašyti duomenis</a></li>  <!-- Correct name in the url tag -->
         </ul>
-        <ul>
+        <ul class="nav-links">
             <li><a href="{% url 'JuJa:make_invoice' %}">Sukurti saskaitą faktūrą</a></li>  <!-- Correct name in the url tag -->
         </ul>
-        <ul>
+        <ul class="nav-links">
             <li><a href="{% url 'JuJa:view_invoices' %}">Peržiurėti saskaitas faktūras</a></li>  <!-- Correct name in the url tag -->
         </ul>
-        <ul>
+        <ul class="nav-links">
             <li><a href="{% url 'JuJa:delete_invoices' %}">Ištrinti saskaitas faktūras</a></li>  <!-- Correct name in the url tag -->
         </ul>
-        <ul>
+        <ul class="nav-links">
             <li><a href="{% url 'JuJa:make_write_off' %}">Sukurti nurašymo aktą</a></li>  <!-- Correct name in the url tag -->
         </ul>
-        <ul>
+        <ul class="nav-links">
             <li><a href="{% url 'JuJa:view_write_offs' %}">Peržiurėti nurašymo aktus</a></li>  <!-- Correct name in the url tag -->
         </ul>
-        <ul>
+        <ul class="nav-links">
             <li><a href="{% url 'JuJa:delete_write_offs' %}">Ištrinti nurašymo aktus</a></li>  <!-- Correct name in the url tag -->
         </ul>
-        <ul>
+        <ul class="nav-links">
             <li><a href="{% url 'JuJa:logout_user' %}">Atsijungti</a></li>  <!-- Correct name in the url tag -->
         </ul>
         
     {% else %}
-        <h1> Sveiki, svečias </h1>
-        <ul>
+        <ul class="nav-links">
             <li><a href="{% url 'JuJa:login_user' %}">Prisijungti</a></li>  <!-- Correct name in the url tag -->
         </ul>
-        <ul>
+        <ul class="nav-links">
             <li><a href="{% url 'JuJa:register_user' %}">Prisiregistruoti</a></li>  <!-- Correct name in the url tag -->
         </ul>    
     {% endif %}
