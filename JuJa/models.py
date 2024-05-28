@@ -14,6 +14,8 @@ class TableRow(models.Model):
     column2 = models.CharField(max_length=100)
     column3 = models.CharField(max_length=100)
     column4 = models.CharField(max_length=100, default="0")
+    column5 = models.CharField(max_length=100, default="0")
+    column6 = models.CharField(max_length=100, default = "Nėra.")
 class UserData(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     invoice_date = models.CharField(max_length=100, default=get_default_date())
@@ -34,6 +36,11 @@ class UserData(models.Model):
     swift = models.CharField(max_length=100, blank=True, default="SWIFT")
     alternative_payment = models.CharField(max_length=100, blank=True, default="ALTERNATYVUS MOKĖJIMAS")
     alternative_account = models.CharField(max_length=100, blank=True, default="ALTERNATYVI SĄSKAITA")
+    member1 = models.CharField(max_length=100, blank=True, default="NARYS1")
+    member2 = models.CharField(max_length=100, blank=True, default="NARYS2")
+    member3 = models.CharField(max_length=100, blank=True, default="NARYS3")
+    member4 = models.CharField(max_length=100, blank=True, default="NARYS4")
+    responsible_member = models.CharField(max_length=100, blank=True, default="ATSAKINGAS DARBUOTOJAS")
 class WriteTable(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     write_table_name = models.CharField(max_length=100)

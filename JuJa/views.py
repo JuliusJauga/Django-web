@@ -5,6 +5,9 @@ from django.contrib import messages
 from django.http import HttpResponse
 from .models import TableRow, UserTable, UserData, WriteTable, WriteOffRow
 from django.utils import timezone
+from io import BytesIO
+from django.template.loader import get_template
+from xhtml2pdf import pisa
 # Create your views here.
 import locale
 
@@ -64,19 +67,25 @@ def make_invoice(request):
                 product = request.POST.get(key)
                 price = request.POST.get('price_' + row_number)
                 quantity = request.POST.get('quantity_' + row_number)
-
+                purpose = request.POST.get('purpose_' + row_number)
+                if not purpose:
+                    purpose = "Nėra."
                 row_instance = TableRow.objects.create(
                     user_table=user_table,
                     column1=product,
                     column2=price,
                     column3=quantity,
-                    column4=str(float(price) * float(quantity))
+                    column4=str(float(price) * float(quantity)),
+                    column5=str(float(price) * float(quantity) * 1.21),
+                    column6=purpose
                 )
         return redirect('JuJa:view_invoices')
     return render(request, 'JuJa/make_invoice.html', {})
 def view_invoices(request, invoice_id=None):
     if not request.user.is_authenticated:
         return redirect('JuJa:login_user')
+    if not UserTable.objects.filter(user=request.user).exists():
+        return redirect('JuJa:index')
     user_tables = UserTable.objects.filter(user=request.user)
     context = {'user_tables': user_tables}
     return render(request, 'JuJa/view_invoices.html', context)
@@ -97,6 +106,8 @@ def view_invoice(request, invoice_id):
 def delete_invoices(request):
     if not request.user.is_authenticated:
         return redirect('JuJa:login_user')
+    if not UserTable.objects.filter(user=request.user).exists():
+        return redirect('JuJa:index')
     user_tables = UserTable.objects.filter(user=request.user)
     context = {'user_tables': user_tables}
     return render(request, 'JuJa/delete_invoices.html', context)
@@ -165,7 +176,12 @@ def enter_information(request):
                             bank_account=request.POST.get('bank_account', 'BANKO SASKAITA'),
                             swift=request.POST.get('swift', 'SWIFTAS'),
                             alternative_payment=request.POST.get('alternative_payment', 'ALTERNATYVUS MOKĖJIMAS'),
-                            alternative_account=request.POST.get('alternative_account', 'ALTERNATYVI SĄSKAITA')
+                            alternative_account=request.POST.get('alternative_account', 'ALTERNATYVI SĄSKAITA'),
+                            member1=request.POST.get('member1', 'NARYS1'),
+                            member2=request.POST.get('member2', 'NARYS2'),
+                            member3=request.POST.get('member3', 'NARYS3'),
+                            member4=request.POST.get('member4', 'NARYS4'),
+                            responsible_member=request.POST.get('responsible_member', 'ATSAKINGAS DARBUOTOJAS')
         )
         if (user_data.document_number == ""):
             user_data.document_number = "0"
@@ -197,6 +213,16 @@ def enter_information(request):
             user_data.alternative_payment = "ALTERNATYVUS MOKĖJIMAS"
         if (user_data.alternative_account == ""):
             user_data.alternative_account = "ALTERNATYVI SĄSKAITA"
+        if (user_data.member1 == ""):
+            user_data.member1 = "NARYS1"
+        if (user_data.member2 == ""):
+            user_data.member2 = "NARYS2"
+        if (user_data.member3 == ""):
+            user_data.member3 = "NARYS3"
+        if (user_data.member4 == ""):
+            user_data.member4 = "NARYS4"
+        if (user_data.responsible_member == ""):
+            user_data.responsible_member = "ATSAKINGAS DARBUOTOJAS"
         user_data.save()
         return redirect('JuJa:view_invoices')
     return render(request, 'JuJa/information_collect.html', {})
@@ -208,16 +234,32 @@ def delete_invoice(request, invoice_id):
 def view_write_offs(request, write_off_id=None):
     if not request.user.is_authenticated:
         return redirect('JuJa:login_user')
+    if not WriteTable.objects.filter(user=request.user).exists():
+        return redirect('JuJa:index')
     user_write_offs = WriteTable.objects.filter(user=request.user)
     context = {'user_write_offs': user_write_offs}
     return render(request, 'JuJa/view_write_offs.html', context)
-def view_write_off(request, write_off_id=None):
+def view_write_off(request, write_off_id):
     if not request.user.is_authenticated:
         return redirect('JuJa:login_user')
-    return render(request, 'JuJa/write_off.html', {})
+    write_off_rows = WriteOffRow.objects.filter(write_table=write_off_id)
+    table_rows = TableRow.objects.filter(user_table__in=write_off_rows.values('user_table'))
+    sum = 0
+    invoice_id = write_off_id
+    user_data, created = UserData.objects.get_or_create(user=request.user)
+    for row in table_rows:
+        sum += float(row.column4)
+        sum_with_vat = sum * 1.21
+        vat = sum * 0.21
+        formatted_sum = locale.format_string("%.2f", sum, grouping=True)
+        formatted_sum_with_vat = locale.format_string("%.2f", sum_with_vat, grouping=True)
+        formatted_vat = locale.format_string("%.2f", vat, grouping=True)
+    return render(request, 'JuJa/write_off.html', {'table_rows': table_rows, 'invoice_id': invoice_id, 'sum': formatted_sum, 'sum_with_vat': formatted_sum_with_vat, 'vat': formatted_vat, 'user_data': user_data, 'write_off_id': invoice_id})
 def delete_write_offs(request):
     if not request.user.is_authenticated:
         return redirect('JuJa:login_user')
+    if not WriteTable.objects.filter(user=request.user).exists():
+        return redirect('JuJa:index')
     user_write_offs = WriteTable.objects.filter(user=request.user)
     context = {'user_write_offs': user_write_offs}
     return render(request, 'JuJa/delete_write_offs.html', context)
@@ -225,4 +267,5 @@ def delete_write_off(request, write_off_id):
     if not request.user.is_authenticated:
         return redirect('JuJa:login_user')
     WriteTable.objects.filter(id=write_off_id).delete()
-    return redirect('index')
+    WriteOffRow.objects.filter(write_table=write_off_id).delete()
+    return redirect('JuJa:delete_write_offs')
