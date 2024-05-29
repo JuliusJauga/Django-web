@@ -36,4 +36,21 @@
 
     </form>
 </body>
+<script>
+    const animationDuration = 20000; // 20 seconds in milliseconds
+    const storageKey = 'animationStartTime';
+
+    function initializeAnimation() {
+        let startTime = localStorage.getItem(storageKey);
+        if (!startTime) {
+            startTime = Date.now();
+            localStorage.setItem(storageKey, startTime);
+        }
+
+        const elapsedTime = (Date.now() - startTime) % animationDuration;
+        document.body.style.animation = `moveBackground 20s linear infinite ${-elapsedTime / 1000}s`;
+    }
+
+    window.addEventListener('load', initializeAnimation);
+</script>
 </html>

@@ -4,22 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title></title>
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: center;
-        }
-    </style>
+    {%load static%}
+    <link rel="stylesheet" type="text/css" href="{%static 'JuJa/style.css'%}"/>
 </head>
 <body>
     <form method="POST">
         {% csrf_token %}
-    <input type="text" name="table_name" placeholder="Saskaitos faktūros pavadinimas" required>
     <table id="dynamic-table">
         <tr>
             <th>Prekė</th>
@@ -29,7 +19,8 @@
         </tr>
     </table>
     <br>
-    <button type="button" onclick="addRow()">Pridėti prekę</button>
+    <button class="btn btn-primary" style="display: block; margin: 0 auto; padding: 10px 20px; font-size: 16px; border: 1px solid #333; background-color: #333; background: rgba(51, 51, 51, 0.8); color: #fff; border-radius: 5px; cursor: pointer;" type="button" onclick="addRow()">Pridėti prekę</button>
+    <input type="text" name="table_name" placeholder="Saskaitos faktūros pavadinimas" required>
     <button type="submit" class="btn btn-primary">Sukurti saskaitą faktūrą</button>
     <script>
         function addRow() {

@@ -3,15 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {%load static%}
+    <link rel="stylesheet" type="text/css" href="{%static 'JuJa/style.css'%}"/>
     <title></title>
 </head>
 <body>
-    <nav>
-        <ul>
+    <nav class="navbar">
+        <ul class="nav-links">
             {% for write_table in user_write_offs %}
                 <li><a href="{% url 'JuJa:delete_write_off' write_off_id=write_table.id %}">{{ write_table.write_table_name }}</a></li>
             {% endfor %}
         </ul>
     </nav>
 </body>
+<script>
+    const animationDuration = 20000; // 20 seconds in milliseconds
+    const storageKey = 'animationStartTime';
+
+    function initializeAnimation() {
+        let startTime = localStorage.getItem(storageKey);
+        if (!startTime) {
+            startTime = Date.now();
+            localStorage.setItem(storageKey, startTime);
+        }
+
+        const elapsedTime = (Date.now() - startTime) % animationDuration;
+        document.body.style.animation = `moveBackground 20s linear infinite ${-elapsedTime / 1000}s`;
+    }
+
+    window.addEventListener('load', initializeAnimation);
+</script>
 </html>

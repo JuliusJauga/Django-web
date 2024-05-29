@@ -70,6 +70,12 @@ def make_invoice(request):
                 purpose = request.POST.get('purpose_' + row_number)
                 if not purpose:
                     purpose = "Nėra."
+                if not product:
+                    continue
+                if not price:
+                    price = "0"
+                if not quantity:
+                    quantity = "0"
                 row_instance = TableRow.objects.create(
                     user_table=user_table,
                     column1=product,
@@ -95,6 +101,9 @@ def view_invoice(request, invoice_id):
     user_data, created = UserData.objects.get_or_create(user=request.user)
     table_rows = TableRow.objects.filter(user_table=invoice_id)
     sum = 0
+    formatted_sum = "0.00"
+    formatted_sum_with_vat = "0.00"
+    formatted_vat = "0.00"
     for row in table_rows:
         sum += float(row.column4)
         sum_with_vat = sum * 1.21
@@ -247,6 +256,9 @@ def view_write_off(request, write_off_id):
     sum = 0
     invoice_id = write_off_id
     user_data, created = UserData.objects.get_or_create(user=request.user)
+    formatted_sum = "0.00"
+    formatted_sum_with_vat = "0.00"
+    formatted_vat = "0.00"
     for row in table_rows:
         sum += float(row.column4)
         sum_with_vat = sum * 1.21
