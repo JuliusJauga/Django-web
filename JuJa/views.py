@@ -5,8 +5,9 @@ from django.contrib import messages
 from django.http import HttpResponse
 from .models import TableRow, UserTable, UserData, WriteTable, WriteOffRow
 from django.utils import timezone
-from io import BytesIO
 from django.template.loader import get_template
+from django.template.loader import render_to_string
+from django.contrib.auth.decorators import login_required
 from xhtml2pdf import pisa
 # Create your views here.
 import locale
@@ -16,6 +17,7 @@ locale.setlocale(locale.LC_ALL, '')
 
 def index(request):
     return render(request, "JuJa/nav_bar.html")
+
 def login_user(request):
     if request.user.is_authenticated:
         return redirect('JuJa:index')
@@ -31,10 +33,12 @@ def login_user(request):
             messages.success(request, ("Nepavyko prisijungti..."))
             return redirect('JuJa:login_user')
     return render(request, 'JuJa/auth.html', {})
+
 def logout_user(request):
     logout(request)
     messages.success(request, ("Atsijungėte..."))
     return redirect('JuJa:index')
+
 def register_user(request):
     if request.user.is_authenticated:
         return redirect('JuJa:index')
@@ -52,9 +56,9 @@ def register_user(request):
     else:
         form = UserCreationForm()
     return render(request, 'JuJa/register.html', {"form": form})
+
+@login_required
 def make_invoice(request):
-    if not request.user.is_authenticated:
-        return redirect('JuJa:login_user')
     if request.method == "POST":
         table_data = request.POST.getlist('table_data[]')
         table_name = request.POST.get('table_name')
@@ -87,17 +91,17 @@ def make_invoice(request):
                 )
         return redirect('JuJa:view_invoices')
     return render(request, 'JuJa/make_invoice.html', {})
+
+@login_required
 def view_invoices(request, invoice_id=None):
-    if not request.user.is_authenticated:
-        return redirect('JuJa:login_user')
     if not UserTable.objects.filter(user=request.user).exists():
         return redirect('JuJa:index')
     user_tables = UserTable.objects.filter(user=request.user)
     context = {'user_tables': user_tables}
     return render(request, 'JuJa/view_invoices.html', context)
+
+@login_required
 def view_invoice(request, invoice_id):
-    if not request.user.is_authenticated:
-        return redirect('JuJa:login_user')
     user_data, created = UserData.objects.get_or_create(user=request.user)
     table_rows = TableRow.objects.filter(user_table=invoice_id)
     sum = 0
@@ -112,17 +116,17 @@ def view_invoice(request, invoice_id):
         formatted_sum_with_vat = locale.format_string("%.2f", sum_with_vat, grouping=True)
         formatted_vat = locale.format_string("%.2f", vat, grouping=True)
     return render(request, 'JuJa/product_invoice.html', {'table_rows': table_rows, 'invoice_id': invoice_id, 'sum': formatted_sum, 'sum_with_vat': formatted_sum_with_vat, 'vat': formatted_vat, 'user_data': user_data})
+
+@login_required
 def delete_invoices(request):
-    if not request.user.is_authenticated:
-        return redirect('JuJa:login_user')
     if not UserTable.objects.filter(user=request.user).exists():
         return redirect('JuJa:index')
     user_tables = UserTable.objects.filter(user=request.user)
     context = {'user_tables': user_tables}
     return render(request, 'JuJa/delete_invoices.html', context)
+
+@login_required
 def edit_invoice(request, invoice_id):
-    if not request.user.is_authenticated:
-        return redirect('JuJa:login_user')
     table_rows = TableRow.objects.filter(user_table=invoice_id)
     sum = 0
     for row in table_rows:
@@ -133,9 +137,9 @@ def edit_invoice(request, invoice_id):
         formatted_sum_with_vat = locale.format_string("%.2f", sum_with_vat, grouping=True)
         formatted_vat = locale.format_string("%.2f", vat, grouping=True)
     return render(request, 'JuJa/edit_invoice.html', {'table_rows': table_rows, 'invoice_id': invoice_id, 'sum': formatted_sum, 'sum_with_vat': formatted_sum_with_vat, 'vat': formatted_vat})
+
+@login_required
 def make_write_off(request):
-    if not request.user.is_authenticated:
-        return redirect('JuJa:login_user')
     if request.method == "POST":
         selected_tables = request.POST.getlist('selected_tables')
         write_table_name = request.POST.get('write_table_name')
@@ -147,9 +151,9 @@ def make_write_off(request):
     user_tables = UserTable.objects.filter(user=request.user)
     context = {'user_tables': user_tables}
     return render(request, 'JuJa/make_write_off.html', context)
+
+@login_required
 def enter_information(request):
-    if not request.user.is_authenticated:
-        return redirect('JuJa:login_user')
     if request.method == "POST":
         user = request.user
         if UserData.objects.filter(user=user).exists():
@@ -235,22 +239,22 @@ def enter_information(request):
         user_data.save()
         return redirect('JuJa:view_invoices')
     return render(request, 'JuJa/information_collect.html', {})
+
+@login_required
 def delete_invoice(request, invoice_id):
-    if not request.user.is_authenticated:
-        return redirect('JuJa:login_user')
     UserTable.objects.filter(id=invoice_id).delete()
     return redirect('JuJa:delete_invoices')
+
+@login_required
 def view_write_offs(request, write_off_id=None):
-    if not request.user.is_authenticated:
-        return redirect('JuJa:login_user')
     if not WriteTable.objects.filter(user=request.user).exists():
         return redirect('JuJa:index')
     user_write_offs = WriteTable.objects.filter(user=request.user)
     context = {'user_write_offs': user_write_offs}
     return render(request, 'JuJa/view_write_offs.html', context)
+
+@login_required
 def view_write_off(request, write_off_id):
-    if not request.user.is_authenticated:
-        return redirect('JuJa:login_user')
     write_off_rows = WriteOffRow.objects.filter(write_table=write_off_id)
     table_rows = TableRow.objects.filter(user_table__in=write_off_rows.values('user_table'))
     sum = 0
@@ -266,18 +270,34 @@ def view_write_off(request, write_off_id):
         formatted_sum = locale.format_string("%.2f", sum, grouping=True)
         formatted_sum_with_vat = locale.format_string("%.2f", sum_with_vat, grouping=True)
         formatted_vat = locale.format_string("%.2f", vat, grouping=True)
-    return render(request, 'JuJa/write_off.html', {'table_rows': table_rows, 'invoice_id': invoice_id, 'sum': formatted_sum, 'sum_with_vat': formatted_sum_with_vat, 'vat': formatted_vat, 'user_data': user_data, 'write_off_id': invoice_id})
+    context = {'table_rows': table_rows, 'invoice_id': invoice_id, 'sum': formatted_sum, 'sum_with_vat': formatted_sum_with_vat, 'vat': formatted_vat, 'user_data': user_data}
+    if request.method == "POST":
+        saveToPdf(request, context)
+    return render(request, 'JuJa/write_off.html', context)
+
+@login_required
 def delete_write_offs(request):
-    if not request.user.is_authenticated:
-        return redirect('JuJa:login_user')
     if not WriteTable.objects.filter(user=request.user).exists():
         return redirect('JuJa:index')
     user_write_offs = WriteTable.objects.filter(user=request.user)
     context = {'user_write_offs': user_write_offs}
     return render(request, 'JuJa/delete_write_offs.html', context)
+
+@login_required
 def delete_write_off(request, write_off_id):
-    if not request.user.is_authenticated:
-        return redirect('JuJa:login_user')
     WriteTable.objects.filter(id=write_off_id).delete()
     WriteOffRow.objects.filter(write_table=write_off_id).delete()
     return redirect('JuJa:delete_write_offs')
+
+@login_required
+def saveToPdf(request, context):
+    html_content = render_to_string('JuJa/write_off_proxy.html', context)
+    with open('invoicas.pdf', 'wb') as output_file:
+        pisa_status = pisa.CreatePDF(
+            html_content,
+            dest=output_file,
+            encoding='utf-8'
+        )
+    return pisa_status.err == 0
+
+
